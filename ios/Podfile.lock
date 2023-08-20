@@ -1,0 +1,68 @@
+PODS:
+  - Alamofire (5.6.4)
+  - fawry_sdk (0.0.1):
+    - Alamofire
+    - FawryPaySDK
+    - Flutter
+    - IQKeyboardManagerSwift
+    - MBRadioButton
+    - RxSwift
+    - SDWebImage
+    - SVProgressHUD
+    - SwiftMessages
+  - FawryPaySDK (0.1.8):
+    - Alamofire (~> 5.6.4)
+    - IQKeyboardManagerSwift (~> 6.5.11)
+    - MBRadioButton (~> 1.4)
+    - RxSwift (~> 6.5.0)
+    - SDWebImage (~> 5.15.0)
+    - SVProgressHUD (~> 2.2.5)
+    - SwiftMessages (~> 9.0.6)
+  - Flutter (1.0.0)
+  - IQKeyboardManagerSwift (6.5.11)
+  - MBRadioButton (1.4)
+  - RxSwift (6.5.0)
+  - SDWebImage (5.15.0):
+    - SDWebImage/Core (= 5.15.0)
+  - SDWebImage/Core (5.15.0)
+  - SVProgressHUD (2.2.5)
+  - SwiftMessages (9.0.6):
+    - SwiftMessages/App (= 9.0.6)
+  - SwiftMessages/App (9.0.6)
+
+DEPENDENCIES:
+  - fawry_sdk (from `.symlinks/plugins/fawry_sdk/ios`)
+  - Flutter (from `Flutter`)
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - FawryPaySDK
+    - IQKeyboardManagerSwift
+    - MBRadioButton
+    - RxSwift
+    - SDWebImage
+    - SVProgressHUD
+    - SwiftMessages
+
+EXTERNAL SOURCES:
+  fawry_sdk:
+    :path: ".symlinks/plugins/fawry_sdk/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  Alamofire: 4e95d97098eacb88856099c4fc79b526a299e48c
+  fawry_sdk: 9874bb74160a3c545e034792752762a07abaee6a
+  FawryPaySDK: d49da0ab06d5c8b22af8cc39b3b9586dc30b8b7a
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  IQKeyboardManagerSwift: c7955c0bdbf7b2eb29bb7daaa44e3d90f55a9a85
+  MBRadioButton: dcf111c9bb633d4cf6e83200d804af6e025033c8
+  RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
+  SDWebImage: 9bec4c5cdd9579e1f57104735ee0c37df274d593
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
+  SwiftMessages: f0c7ef4705a570ad6c5e208b611f4333e660ed92
+
+PODFILE CHECKSUM: 7f0140c32c0f374d03ccb54d590521e86858fb96
+
+COCOAPODS: 1.12.1
