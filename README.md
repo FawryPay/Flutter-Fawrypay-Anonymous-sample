@@ -1,19 +1,39 @@
 # Fawry SDK Integration Guide
 
-The Fawry SDK is a cross-platform plugin that facilitates the integration of your app with Fawry's native Android and iOS SDKs, enabling seamless payment integration.
+Welcome to the comprehensive Fawry SDK Integration Guide. This guide will walk you through the seamless integration of Fawry's native Android and iOS SDKs into your Flutter projects for effortless payment integration.
+
+## Table of Contents
+
+1. [Getting Started](#getting-started)
+   - [Adding Fawry SDK Plugin](#adding-fawry-sdk-plugin)y
+   - [Android Setup](#android-setup)
+   - [iOS Setup](#ios-setup)
+   - [Streaming Result Data](#streaming-result-data)
+2. [SDK Initialization](#sdk-initialization)
+   - [Building FawryLaunchModel](#building-fawrylaunchmodel)
+   - [Example](#example)
+3. [Customizing UI Colors](#customizing-ui-colors)
+   - [Android](#android)
+   - [iOS](#ios)
+4. [Troubleshooting Release Mode](#troubleshooting-release-mode)
+5. [Sample Project](#sample-project)
 
 ## Getting Started
 
-Add the Fawry SDK plugin to your Flutter project's dependencies by adding the following line to your `pubspec.yaml` file:
+### Adding Fawry SDK Plugin
+
+To begin, add the Fawry SDK plugin to your Flutter project's dependencies. Open your `pubspec.yaml` file and add the following line:
 
 ```yaml
 dependencies:
-  fawry_sdk: ^1.0.9
+  fawry_sdk: ^1.0.92
 ```
 
 ### Android Setup
 
-1. Edit your `AndroidManifest.xml` file by adding the following code snippet inside the `<application>` tag:
+To integrate with Android, follow these steps:
+
+1. Open your `AndroidManifest.xml` file and insert the following code snippet inside the `<application>` tag:
 
 ```xml
 <application
@@ -21,11 +41,11 @@ dependencies:
     android:icon="@mipmap/ic_launcher"
     android:label="Your App Label"
     tools:replace="android:label">
-    <!-- if you're not defining a label, remove 'android:label' from tools:replace -->
+    <!-- Remove 'android:label' from tools:replace if not defining a label -->
 </application>
 ```
 
-2. Update the **minimum SDK version** to be **21** or higher in your `build.gradle` file:
+2. Update the **minimum SDK version** to **21** or higher in your `build.gradle` file:
 
 ```groovy
 android {
@@ -37,83 +57,170 @@ android {
 
 ### iOS Setup
 
-1. Set the minimum iOS version under "Deployment info" to 12.1 or higher in your `Runner` project in Xcode.
+For iOS integration, follow these steps:
 
-**NOTE:** The plugin currently supports only real devices. Simulators will be supported in later versions of the SDK.
+1. Set the minimum iOS version under "Deployment info" to **12.1** or higher in your `Runner` project in Xcode.
 
-## Usage
+2. Enhance pod distribution by adding the following code at the end of the pod file (`Podfile`):
 
-### Initializing the SDK
-
-To initialize the Fawry SDK, follow these steps:
-
-1. Import the Fawry SDK package in your Dart code:
-
-```dart
-import 'package:fawry_sdk/fawry_sdk.dart';
+```ruby
+post_install do |installer|
+    installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+            config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+        end
+    end
+end
 ```
 
-2. Initialize the SDK by passing the required parameters using the `FawrySdk.instance.init()` method:
+### Streaming Result Data
+
+You can stream the result data that comes from the Fawry SDK to handle different response scenarios using Flutter's stream functionality. Here's how you can achieve this:
 
 ```dart
-await FawrySdk.instance.init(
-  launchModel: fawryLaunchModel,
-  baseURL: "BASE_URL",
-  lang: FawrySdk.LANGUAGE_ENGLISH or FawrySdk.LANGUAGE_ARABIC,
-);
+late StreamSubscription? _fawryCallbackResultStream;
+
+  @override
+  void initState() {
+    super.initState();
+    initSDKCallback();
+  }
+
+  @override
+  void dispose() {
+    _fawryCallbackResultStream?.cancel();
+    super.dispose();
+  }
+
+  Future<void> initSDKCallback() async {
+    try {
+      _fawryCallbackResultStream =
+          FawrySdk.instance.callbackResultStream().listen((event) {
+        setState(() {
+          ResponseStatus response = ResponseStatus.fromJson(jsonDecode(event));
+          handleResponse(response);
+        });
+      });
+    } catch (ex) {
+      debugPrint(ex.toString());
+    }
+  }
+
+  void handleResponse(ResponseStatus response) {
+    switch (response.status) {
+      case FawrySdk.RESPONSE_SUCCESS:
+        {
+          debugPrint('Message: ${response.message}');
+          debugPrint('Json Response: ${response.data}');
+        }
+        break;
+      case FawrySdk.RESPONSE_ERROR:
+        {
+          debugPrint('Error: ${response.message}');
+        }
+        break;
+      case FawrySdk.RESPONSE_PAYMENT_COMPLETED:
+        {
+          debugPrint(
+              'Payment Completed: ${response.message}, ${response.data}');
+        }
+        break;
+    }
+  }
 ```
+
+This will enable you to handle different responses and outcomes from the Fawry SDK in a more dynamic way. The `handleResponse` method is where you can customize your actions based on the response status.
+
+## SDK Initialization
+
+To start using the Fawry SDK, follow these steps:
 
 ### Building FawryLaunchModel
 
-The `FawryLaunchModel` is essential for initializing the Fawry SDK. It contains various attributes for the payment process.
+The `FawryLaunchModel` is essential to initialize the Fawry SDK. It contains both mandatory and optional parameters needed for the payment process.
 
-Example of creating a `FawryLaunchModel`:
+#### LaunchCustomerModel (Optional) Parameters:
+
+1. `customerName` (optional)
+2. `customerEmail` (optional - Receives an email with the receipt after payment completion)
+3. `customerMobile` (optional - Receives an SMS with the reference number and payment details)
+
+#### ChargeItem Parameters:
+
+1. `Price` (mandatory)
+2. `Quantity` (mandatory)
+3. `itemId` (mandatory)
+4. `Description` (optional)
+
+#### LaunchMerchantModel Parameters:
+
+1. `merchantCode` (provided by support – mandatory)
+2. `merchantRefNum` (random 10 alphanumeric digits – mandatory)
+3. `secureKey` (provided by support – mandatory)
+
+#### Other Parameters:
+
+1. `allow3DPayment` (to allow 3D Secure payment)
+2. `secretCode` (provided by support)
+3. `signature` (generated by you)
+4. `skipLogin` (can skip login screen that takes email and mobile, default value is true)
+5. `skipReceipt` (to skip the receipt screen, default value is false)
+6. `payWithCardToken` (Enables/disables user card tokenization; if enabled, define `customerProfileId` in LaunchCustomerModel)
+7. `paymentMethods` (optional; controls payment methods displayed to the user, e.g., `PaymentMethods.CREDIT_CARD` , `PaymentMethods.ALL` )
+
+### Example
 
 ```dart
-// Create a charge item
-BillItem item = BillItem(
-  itemId: "ITEM_ID",
-  description: "",
-  quantity: 4,
-  price: 15,
-);
+  Future<void> initiateSDK() async {
+    final item =
+        BillItem(itemId: 'ITEM_ID', description: 'Book', quantity: 5, price: 20);
+    //sorted list
+    final chargeItems = [item];
 
-// Create a customer model
-LaunchCustomerModel customerModel = LaunchCustomerModel(
-  customerName: "John Doe",
-  customerEmail: "john.doe@xyz.com",
-  customerMobile: "+201000000000",
-);
+    final customerModel = LaunchCustomerModel(
+      customerProfileId: '533518',
+      customerName: 'John Doe',
+      customerEmail: 'john.doe@xyz.com',
+      customerMobile: '+201000000000',
+    );
 
-// Create a merchant model
-LaunchMerchantModel merchantModel = LaunchMerchantModel(
-  merchantCode: "MERCHANT_CODE",
-  merchantRefNum: "MERCHANT_REF_NUM",
-  secureKey: "SECURE_KEY or SECRET_CODE",
-);
+    final merchantModel = LaunchMerchantModel(
+      merchantCode: "MERCHANT_CODE",
+      merchantRefNum: FawryUtils.randomAlphaNumeric(10),
+      secureKey: 'SECURE KEY OR SECRET CODE',
+    );
 
-// Create the FawryLaunchModel
-FawryLaunchModel model = FawryLaunchModel(
-  allow3DPayment: true,
-  chargeItems: [item],
-  launchCustomerModel: customerModel,
-  launchMerchantModel: merchantModel,
-  skipLogin: true,
-  skipReceipt: false,
-  payWithCardToken: false,
-  paymentMethods: PaymentMethods.ALL,
-);
+    final model = FawryLaunchModel(
+      allow3DPayment: true,
+      chargeItems: chargeItems,
+      launchCustomerModel: customerModel,
+      launchMerchantModel: merchantModel,
+      skipLogin: true,
+      skipReceipt: true,
+      payWithCardToken: false,
+      paymentMethods: PaymentMethods.CREDIT_CARD,
+    );
+
+    await FawrySdk.instance.init(
+      launchModel: model,
+      baseURL: "https://atfawry.fawrystaging.com/",
+      lang: FawrySdk.LANGUAGE_ENGLISH,
+      // lang: FawrySdk.LANGUAGE_ARBIC, // FOR ARABIC VERSION
+    );
+  }
 ```
 
-### Customizing UI Colors - Android
+---
 
-To customize UI colors on Android, follow these steps:
+## Customizing UI Colors
+
+### Android
 
 1. Navigate to `android > app > src > main > res > values`.
 
-2. Create a new file called `colors.xml`.
+2. Create a new file named `colors.xml`.
 
-3. Add the following content to `colors.xml`:
+3. Add color values to `colors.xml`:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -123,15 +230,13 @@ To customize UI colors on Android, follow these steps:
 </resources>
 ```
 
-### Customizing UI Colors - iOS
-
-To customize UI colors on iOS, follow these steps:
+### iOS
 
 1. In your project, navigate to `ios > Runner`.
 
-2. Create a new file called `Style.plist`.
+2. Create a new file named `Style.plist`.
 
-3. Add the following content to `Style.plist`:
+3. Add color values to `Style.plist`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -150,6 +255,32 @@ To customize UI colors on iOS, follow these steps:
 </plist>
 ```
 
-4. In Xcode, right-click on the `Runner` folder, select "Add Files to 'Runner'", and add the `Style.plist` file.
+4. In Xcode, right-click on the `Runner`, select "Add Files to 'Runner'", and add the `Style.plist` file.
 
-These steps will allow you to customize the UI colors of the Fawry SDK integration on both Android and iOS platforms.
+## Troubleshooting Release Mode
+
+If you experience an issue in release mode not present in debug mode, you can address it by adding these rules to your Android app's `build.gradle`:
+
+```groovy
+// ... (previous code)
+
+buildTypes {
+    release {
+        minifyEnabled false
+        shrinkResources false
+        // ...
+    }
+}
+```
+
+## Sample Project
+
+For a practical demonstration of Fawry SDK integration in a Flutter app, explore our sample project on GitHub:
+
+[**Flutter Fawrypay Anonymous Sample**](https://github.com/FawryPay/Flutter-Fawrypay-Anonymous-sample)
+
+This project showcases the usage and seamless integration of the Fawry SDK for secure payment processing in your Flutter applications.
+
+---
+
+Feel free to dive into the sample project and leverage the guide to effortlessly integrate the Fawry SDK into your Flutter app.
