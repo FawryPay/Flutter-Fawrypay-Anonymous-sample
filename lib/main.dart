@@ -18,7 +18,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +36,10 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  const MyHomePage({super.key});
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -57,7 +57,6 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  // Initialize the Fawry SDK callback for receiving payment results
   Future<void> initSDKCallback() async {
     try {
       _fawryCallbackResultStream =
@@ -72,7 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // Handle the different response statuses from the Fawry SDK
   void handleResponse(ResponseStatus response) {
     switch (response.status) {
       case FawrySdk.RESPONSE_SUCCESS:
@@ -95,7 +93,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // Determine the current platform (Android, iOS, or Unknown)
   String currentPlatform() {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -107,29 +104,24 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // Initialize the Fawry SDK with the necessary information
   Future<void> initiateSDK() async {
-    // Creating a sample item for the bill
     final item =
-        BillItem(itemId: 'ITEM_ID', description: '', quantity: 4, price: 15);
+        BillItem(itemId: 'Item1', description: 'Book', quantity: 6, price: 50);
     final chargeItems = [item];
 
-    // Creating a sample customer model
     final customerModel = LaunchCustomerModel(
       customerProfileId: '533518',
-      customerName: 'Ahmed Kamal',
-      customerEmail: 'Ahmed.Kamal@Fawry.com',
-      customerMobile: '+201123456789',
+      customerName: 'John Doe',
+      customerEmail: 'john.doe@xyz.com',
+      customerMobile: '+201000000000',
     );
 
-    // Creating a sample merchant model
     final merchantModel = LaunchMerchantModel(
-      merchantCode: "MERCHANT_CODE",
+      merchantCode: "+/IAAY2notgLsdUB9VeTFg==",
       merchantRefNum: FawryUtils.randomAlphaNumeric(10),
-      secureKey: 'SECURE_KEY or SECRET_CODE',
+      secureKey: '69826c87-963d-47b7-8beb-869f7461fd93',
     );
 
-    // Creating a model to launch Fawry payment
     final model = FawryLaunchModel(
       allow3DPayment: true,
       chargeItems: chargeItems,
@@ -141,7 +133,6 @@ class _MyHomePageState extends State<MyHomePage> {
       paymentMethods: PaymentMethods.ALL,
     );
 
-    // Initializing the Fawry SDK
     await FawrySdk.instance.init(
       launchModel: model,
       baseURL: "https://atfawry.fawrystaging.com/",

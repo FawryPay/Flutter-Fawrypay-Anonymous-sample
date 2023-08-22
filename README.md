@@ -26,7 +26,7 @@ To begin, add the Fawry SDK plugin to your Flutter project's dependencies. Open 
 
 ```yaml
 dependencies:
-  fawry_sdk: ^1.0.92
+  fawry_sdk: ^1.0.12
 ```
 
 ### Android Setup
