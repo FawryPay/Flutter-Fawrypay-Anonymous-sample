@@ -5,7 +5,7 @@ Welcome to the comprehensive Fawry SDK Integration Guide. This guide will walk y
 ## Table of Contents
 
 1. [Getting Started](#getting-started)
-   - [Adding Fawry SDK Plugin](#adding-fawry-sdk-plugin)y
+   - [Adding Fawry SDK Plugin](#adding-fawry-sdk-plugin)
    - [Android Setup](#android-setup)
    - [iOS Setup](#ios-setup)
    - [Streaming Result Data](#streaming-result-data)
