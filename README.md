@@ -8,15 +8,20 @@ Welcome to the comprehensive Fawry SDK Integration Guide. This guide will walk y
    - [Adding Fawry SDK Plugin](#adding-fawry-sdk-plugin)
    - [Android Setup](#android-setup)
    - [iOS Setup](#ios-setup)
+   - [Fawry SDK Imports](#fawry-sdk-imports)
    - [Streaming Result Data](#streaming-result-data)
 2. [SDK Initialization](#sdk-initialization)
    - [Building FawryLaunchModel](#building-fawrylaunchmodel)
    - [Example](#example)
+   - [Start Payment](#start-payment)
+   - [Open Cards Manager](#open-cards-manager)
 3. [Customizing UI Colors](#customizing-ui-colors)
    - [Android](#android)
    - [iOS](#ios)
 4. [Troubleshooting Release Mode](#troubleshooting-release-mode)
 5. [Sample Project](#sample-project)
+
+---
 
 ## Getting Started
 
@@ -26,7 +31,7 @@ To begin, add the Fawry SDK plugin to your Flutter project's dependencies. Open 
 
 ```yaml
 dependencies:
-  fawry_sdk: ^1.0.14
+  fawry_sdk: ^2.0.1
 ```
 
 ### Android Setup
@@ -36,6 +41,7 @@ To integrate with Android, follow these steps:
 1. Open your `AndroidManifest.xml` file and insert the following code snippet inside the `<application>` tag:
 
 ```xml
+<!-- Add this code inside the <application> tag -->
 <application
     android:allowBackup="false"
     android:icon="@mipmap/ic_launcher"
@@ -55,6 +61,8 @@ android {
 }
 ```
 
+**Notice:** Make sure to upgrade your Kotlin version to 1.9.0 to ensure compatibility with the Fawry SDK
+
 ### iOS Setup
 
 For iOS integration, follow these steps:
@@ -73,11 +81,27 @@ post_install do |installer|
 end
 ```
 
+### Fawry SDK Imports
+
+Before you proceed, make sure to import the necessary Fawry SDK packages at the beginning of your Dart file:
+
+```dart
+import 'package:fawry_sdk/fawry_sdk.dart';
+import 'package:fawry_sdk/fawry_utils.dart';
+import 'package:fawry_sdk/model/bill_item.dart';
+import 'package:fawry_sdk/model/fawry_launch_model.dart';
+import 'package:fawry_sdk/model/launch_customer_model.dart';
+import 'package:fawry_sdk/model/launch_merchant_model.dart';
+import 'package:fawry_sdk/model/payment_methods.dart';
+import 'package:fawry_sdk/model/response.dart';
+```
+
 ### Streaming Result Data
 
 You can stream the result data that comes from the Fawry SDK to handle different response scenarios using Flutter's stream functionality. Here's how you can achieve this:
 
 ```dart
+// Add this code in your Dart file
 late StreamSubscription? _fawryCallbackResultStream;
 
   @override
@@ -131,9 +155,9 @@ late StreamSubscription? _fawryCallbackResultStream;
 
 This will enable you to handle different responses and outcomes from the Fawry SDK in a more dynamic way. The `handleResponse` method is where you can customize your actions based on the response status.
 
-## SDK Initialization
+---
 
-To start using the Fawry SDK, follow these steps:
+## SDK Initialization
 
 ### Building FawryLaunchModel
 
@@ -171,43 +195,66 @@ The `FawryLaunchModel` is essential to initialize the Fawry SDK. It contains bot
 ### Example
 
 ```dart
-  Future<void> initiateSDK() async {
-    final item =
-        BillItem(itemId: 'ITEM_ID', description: 'Book', quantity: 5, price: 20);
-    //sorted list
-    final chargeItems = [item];
+ 
+BillItem item = BillItem(
+  itemId: 'Item1',
+  description: 'Book',
+  quantity: 6,
+  price: 50,
+);
 
-    final customerModel = LaunchCustomerModel(
-      customerProfileId: '533518',
-      customerName: 'John Doe',
-      customerEmail: 'john.doe@xyz.com',
-      customerMobile: '+201000000000',
-    );
+List<BillItem> chargeItems = [item];
 
-    final merchantModel = LaunchMerchantModel(
-      merchantCode: "MERCHANT_CODE",
-      merchantRefNum: FawryUtils.randomAlphaNumeric(10),
-      secureKey: 'SECURE KEY OR SECRET CODE',
-    );
+LaunchCustomerModel customerModel = LaunchCustomerModel(
+  customerProfileId: '533518',
+  customerName: 'John Doe',
+  customerEmail: 'john.doe@xyz.com',
+  customerMobile: '+201000000000',
+);
 
-    final model = FawryLaunchModel(
-      allow3DPayment: true,
-      chargeItems: chargeItems,
-      launchCustomerModel: customerModel,
-      launchMerchantModel: merchantModel,
-      skipLogin: true,
-      skipReceipt: true,
-      payWithCardToken: false,
-      paymentMethods: PaymentMethods.CREDIT_CARD,
-    );
+LaunchMerchantModel merchantModel = LaunchMerchantModel(
+  merchantCode: 'YOUR MERCHANT CODE',
+  merchantRefNum: FawryUtils.randomAlphaNumeric(10),
+  secureKey: 'YOUR SECURE KEY',
+);
 
-    await FawrySdk.instance.init(
-      launchModel: model,
-      baseURL: "https://atfawry.fawrystaging.com/",
-      lang: FawrySdk.LANGUAGE_ENGLISH,
-      // lang: FawrySdk.LANGUAGE_ARBIC, // FOR ARABIC VERSION
-    );
-  }
+FawryLaunchModel model = FawryLaunchModel(
+  allow3DPayment: true,
+  chargeItems: chargeItems,
+  launchCustomerModel: customerModel,
+  launchMerchantModel: merchantModel,
+  skipLogin: true,
+  skipReceipt: true,
+  payWithCardToken: false,
+  paymentMethods: PaymentMethods.ALL,
+);
+
+String baseUrl = "https://atfawry.fawrystaging.com/";
+```
+
+
+### Start Payment
+
+```dart
+Future<void> startPayment() async {
+  await FawrySDK.instance.startPayment(
+    launchModel: model,
+    baseURL: baseUrl,
+    lang: FawrySDK.LANGUAGE_ENGLISH,
+  );
+}
+```
+
+### Open Cards Manager
+
+```dart
+Future<void> openCardsManager() async {
+  await FawrySDK.instance.openCardsManager(
+    launchModel: model,
+    baseURL: baseUrl,
+    lang: FawrySDK.LANGUAGE_ENGLISH,
+  );
+}
 ```
 
 ---
