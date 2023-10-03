@@ -13,10 +13,50 @@ import 'package:fawry_sdk/model/launch_merchant_model.dart';
 import 'package:fawry_sdk/model/payment_methods.dart';
 import 'package:fawry_sdk/model/response.dart';
 
+class Constants {
+  static const String merchantCode = "YOUR MERCHANT KEY";
+  static const String secureKey = "YOUR SECURE KEY";
+  static const String baseUrl = "https://atfawry.fawrystaging.com/";
+}
+
+class FawryService {
+  static LaunchMerchantModel getMerchantModel() {
+    return LaunchMerchantModel(
+      merchantCode: Constants.merchantCode,
+      merchantRefNum: FawryUtils.randomAlphaNumeric(10),
+      secureKey: Constants.secureKey,
+    );
+  }
+
+  Future<void> startPayment(FawryLaunchModel model) async {
+    try {
+      await FawrySDK.instance.startPayment(
+        launchModel: model,
+        baseURL: Constants.baseUrl,
+        lang: FawrySDK.LANGUAGE_ENGLISH,
+      );
+    } catch (e) {
+      debugPrint('Error starting payment: $e');
+    }
+  }
+
+  Future<void> openCardsManager(FawryLaunchModel model) async {
+    try {
+      await FawrySDK.instance.openCardsManager(
+        launchModel: model,
+        baseURL: Constants.baseUrl,
+        lang: FawrySDK.LANGUAGE_ENGLISH,
+      );
+    } catch (e) {
+      debugPrint('Error opening cards manager: $e');
+    }
+  }
+}
+
 BillItem item = BillItem(
-  itemId: 'Item1',
-  description: 'Book',
-  quantity: 6,
+  itemId: 'ITEM_ID',
+  description: '',
+  quantity: 5,
   price: 50,
 );
 
@@ -29,24 +69,16 @@ LaunchCustomerModel customerModel = LaunchCustomerModel(
   customerMobile: '+201000000000',
 );
 
-LaunchMerchantModel merchantModel = LaunchMerchantModel(
-  merchantCode: "+/IAAY2notgLsdUB9VeTFg==",
-  merchantRefNum: FawryUtils.randomAlphaNumeric(10),
-  secureKey: '69826c87-963d-47b7-8beb-869f7461fd93',
-);
-
 FawryLaunchModel model = FawryLaunchModel(
   allow3DPayment: true,
   chargeItems: chargeItems,
   launchCustomerModel: customerModel,
-  launchMerchantModel: merchantModel,
+  launchMerchantModel: FawryService.getMerchantModel(),
   skipLogin: true,
   skipReceipt: true,
   payWithCardToken: false,
   paymentMethods: PaymentMethods.ALL,
 );
-
-String baseUrl = "https://atfawry.fawrystaging.com/";
 
 void main() {
   runApp(const MyApp());
@@ -144,57 +176,48 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Initialize Fawry SDK with required parameters
   Future<void> startPayment() async {
-    await FawrySDK.instance.startPayment(
-      launchModel: model,
-      baseURL: baseUrl,
-      lang: FawrySDK.LANGUAGE_ENGLISH,
-    );
+    await FawryService().startPayment(model);
   }
 
   Future<void> openCardsManager() async {
-    await FawrySDK.instance.openCardsManager(
-      launchModel: model,
-      baseURL: baseUrl,
-      lang: FawrySDK.LANGUAGE_ENGLISH,
-    );
+    await FawryService().openCardsManager(model);
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      title: const Text('Fawry SDK Flutter example'),
-    ),
-    body: Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Center(
-          child: Text(currentPlatform()),
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: [
-              ElevatedButton(
-                onPressed: () async {
-                  await startPayment();
-                },
-                child: const Text('Checkout / Pay'),
-              ),
-              const SizedBox(height: 5.0),
-              ElevatedButton(
-                onPressed: () async {
-                  await openCardsManager();
-                },
-                child: const Text('Manage Cards'),
-              ),
-            ],
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Fawry SDK Flutter example'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Center(
+            child: Text(currentPlatform()),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    await startPayment();
+                  },
+                  child: const Text('Checkout / Pay'),
+                ),
+                const SizedBox(height: 5.0),
+                ElevatedButton(
+                  onPressed: () async {
+                    await openCardsManager();
+                  },
+                  child: const Text('Manage Cards'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
