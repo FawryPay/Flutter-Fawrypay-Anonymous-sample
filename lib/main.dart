@@ -14,9 +14,9 @@ import 'package:fawry_sdk/model/payment_methods.dart';
 import 'package:fawry_sdk/model/response.dart';
 
 class Constants {
-  static const String merchantCode = "YOUR MERCHANT KEY";
-  static const String secureKey = "YOUR SECURE KEY";
-  static const String baseUrl = "https://atfawry.fawrystaging.com/";
+  static const String merchantCode = "+/IAAY2notgLsdUB9VeTFg==";
+  static const String secureKey = "69826c87-963d-47b7-8beb-869f7461fd93";
+  static const String baseUrl = "https://atfawry.fawrystaging.com";
 }
 
 class FawryService {
@@ -176,10 +176,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Initialize Fawry SDK with required parameters
   Future<void> startPayment() async {
+    model.launchMerchantModel.merchantRefNum = FawryUtils.randomAlphaNumeric(10);
     await FawryService().startPayment(model);
   }
 
   Future<void> openCardsManager() async {
+    model.launchMerchantModel.merchantRefNum = FawryUtils.randomAlphaNumeric(10);
     await FawryService().openCardsManager(model);
   }
 
