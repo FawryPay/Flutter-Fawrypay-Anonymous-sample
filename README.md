@@ -161,36 +161,51 @@ This will enable you to handle different responses and outcomes from the Fawry S
 
 ### Building FawryLaunchModel
 
-The `FawryLaunchModel` is essential to initialize the Fawry SDK. It contains both mandatory and optional parameters needed for the payment process.
+<br/>LaunchCustomerModel
 
-#### LaunchCustomerModel (Optional) Parameters:
+| **PARAMETER**     | **TYPE** | **REQUIRED** | **DESCRIPTION**                                 | **EXAMPLE**                                        |
+|---------------|---------------|---------------|---------------|---------------|
+| customerName      | String   | optional     | \-                                              | Name Name                                          |
+| customerEmail     | String   | optional     | \-                                              | [email\@email.com](mailto:email@email.com){.email} |
+| customerMobile    | String   | optional     | \-                                              | +0100000000                                        |
+| customerProfileId | String   | optional     | mandatory in case of payments using saved cards | 1234                                               |
 
-1. `customerName` (optional)
-2. `customerEmail` (optional - Receives an email with the receipt after payment completion)
-3. `customerMobile` (optional - Receives an SMS with the reference number and payment details)
+<br/>LaunchMerchantModel
 
-#### ChargeItem Parameters:
+| **PARAMETER**  | **TYPE** | **REQUIRED**        | **DESCRIPTION**                                                           | **EXAMPLE**           |
+|---------------|---------------|---------------|---------------|---------------|
+| merchantCode   | String   | required            | Merchant ID provided during FawryPay account setup.                       | +/IPO2sghiethhN6tMC== |
+| merchantRefNum | String   | required            | Merchant's transaction reference number is random 10 alphanumeric digits. | A1YU7MKI09            |
+| secretKey     | String   | required            | provided by support                                                       | 4b8jw3j2-8gjhfrc-4wc4-scde-453dek3d |
 
-1. `Price` (mandatory)
-2. `Quantity` (mandatory)
-3. `itemId` (mandatory)
-4. `Description` (optional)
+<br/>ChargeItemsParamsModel
 
-#### LaunchMerchantModel Parameters:
+| **PARAMETER** | **TYPE** | **REQUIRED** | **DESCRIPTION** | **EXAMPLE**         |
+|---------------|---------------|---------------|---------------|---------------|
+| itemId        | String   | required     | \-              | 3w8io               |
+| description   | String   | optional     | \-              | This is description |
+| price         | String   | required     | \-              | 200.00              |
+| quantity      | String   | required     | \-              | 1                   |
 
-1. `merchantCode` (provided by support – mandatory)
-2. `merchantRefNum` (random 10 alphanumeric digits – mandatory)
-3. `secureKey` (provided by support – mandatory)
+<br/>FawryLaunchModel
 
-#### Other Parameters:
+| **PARAMETER**           | **TYPE**   | **REQUIRED** | **DESCRIPTION** | **EXAMPLE** |
+|---------------|---------------|---------------|---------------|---------------|
+| **launchCustomerModel** | LaunchCustomerModel | optional | Customer information.         | \-          |
+| **launchMerchantModel** | LaunchMerchantModel | required | Merchant information.         | \-          |
+| **chargeItems**         | [ChargeItemsParamsModel]      | required       | Array of items which the user will buy, this array must be of type ChargeItemsParamsModel  | \-          |
+| signature               | String    | optional  | You can create your own signature by concatenate the following elements on the same order and hash the result using **SHA-256** as explained:"merchantCode + merchantRefNum + customerProfileId (if exists, otherwise insert"") + itemId + quantity + Price (in tow decimal format like '10.00') + Secure hash keyIn case of the order contains multiple items the list will be **sorted** by itemId and concatenated one by one for example itemId1+ Item1quantity + Item1price + itemId2 + Item2quantity + Item2price | \-          | 
+| allowVoucher            | Boolean  | optional - default value = false  | True if your account supports voucher code | \-          |
+| payWithCardToken        | Boolean   | required   | If true, the user will pay with a card token ( one of the saved cards or add new card to be saved )If false, the user will pay with card details without saving | \-   | 
+| allow3DPayment          | Boolean                 | optional - default value = false | to allow 3D secure payment make it "true" | \-    |
+| skipReceipt             | Boolean                 | optional - default value = false      | to skip receipt after payment trial      | \-          |
+| skipLogin               | Boolean                          | optional - default value = true  | to skip login screen in which we take email and mobile   | \-          |
+| authCaptureMode         | Boolean                          | optional - default value = false                                                                                                                                | depends on refund configuration: will be true when refund is enabled and false when refund is disabled                                                                                             | false       |
+| paymentMethod        | PaymentMethods         | Optional - default value = .ALL | If the user needs to show only one payment method. | PaymentMethods.ALL |
 
-1. `allow3DPayment` (to allow 3D Secure payment)
-2. `secretCode` (provided by support)
-3. `signature` (generated by you)
-4. `skipLogin` (can skip login screen that takes email and mobile, default value is true)
-5. `skipReceipt` (to skip the receipt screen, default value is false)
-6. `payWithCardToken` (Enables/disables user card tokenization; if enabled, define `customerProfileId` in LaunchCustomerModel)
-7. `paymentMethods` (optional; controls payment methods displayed to the user, e.g., `PaymentMethods.CREDIT_CARD` , `PaymentMethods.ALL` )
+**Notes:**
+
+-   **you can pass either signature or secureKey (in this case we will create the signature internally), knowing that if the 2 parameters are passed the secureKey will be ignored and the signature will be used.**
 
 ### Example
 
