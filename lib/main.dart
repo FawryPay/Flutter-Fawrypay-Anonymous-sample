@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
@@ -85,7 +85,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +103,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -111,6 +111,19 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late StreamSubscription? _fawryCallbackResultStream;
+  final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
+
+  static const CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
+
+  static const CameraPosition _kLake = CameraPosition(
+      bearing: 192.8334901395799,
+      target: LatLng(37.43296265331129, -122.08832357078792),
+      tilt: 59.440717697143555,
+      zoom: 19.151926040649414);
 
   @override
   void initState() {
@@ -176,13 +189,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Initialize Fawry SDK with required parameters
   Future<void> startPayment() async {
-    model.launchMerchantModel.merchantRefNum = FawryUtils.randomAlphaNumeric(10);
+    model.launchMerchantModel.merchantRefNum =
+        FawryUtils.randomAlphaNumeric(10);
     await FawryService().startPayment(model);
   }
 
   Future<void> openCardsManager() async {
-    model.launchMerchantModel.merchantRefNum = FawryUtils.randomAlphaNumeric(10);
+    model.launchMerchantModel.merchantRefNum =
+        FawryUtils.randomAlphaNumeric(10);
     await FawryService().openCardsManager(model);
+  }
+
+  Future<void> _goToTheLake() async {
+    final GoogleMapController controller = await _controller.future;
+    await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 
   @override
@@ -193,10 +213,19 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Fawry SDK Flutter example'),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Center(
             child: Text(currentPlatform()),
+          ),
+          Flexible(
+            child: GoogleMap(
+              mapType: MapType.hybrid,
+              initialCameraPosition: _kGooglePlex,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+              },
+            ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -214,6 +243,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     await openCardsManager();
                   },
                   child: const Text('Manage Cards'),
+                ),
+                const SizedBox(height: 5.0),
+                ElevatedButton(
+                  onPressed: () async {
+                    await _goToTheLake();
+                  },
+                  child: const Text('Open Google Maps To Lake'),
                 ),
               ],
             ),

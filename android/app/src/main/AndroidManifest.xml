@@ -6,6 +6,11 @@
         android:icon="@mipmap/ic_launcher"
         android:label="flutter_fawry_sdk"
         tools:replace="android:allowBackup,android:label">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCC7vAZsqF39h52HfvEPuwjqBJtn7VHlgg" />
+
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
