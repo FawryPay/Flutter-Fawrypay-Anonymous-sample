@@ -14,8 +14,8 @@ import 'package:fawry_sdk/model/payment_methods.dart';
 import 'package:fawry_sdk/model/response.dart';
 
 class Constants {
-  static const String merchantCode = "+/IAAY2notgLsdUB9VeTFg==";
-  static const String secureKey = "69826c87-963d-47b7-8beb-869f7461fd93";
+  static const String merchantCode = "770000017893";
+  static const String secureKey = "0c96f509-d488-4a6b-b08a-a0d9782a6517";
   static const String baseUrl = "https://atfawry.fawrystaging.com";
 }
 
