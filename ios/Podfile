@@ -36,15 +36,26 @@ target 'Runner' do
 end
 
 
+#post_install do |installer|
+#    installer.pods_project.targets.each do |pod|
+#      flutter_additional_ios_build_settings(pod)
+##        pods = {'FawryPaySDK': '0.1.27'}
+#        pods = {'Alamofire':'5.8.1'}
+#        if pods.has_key?(pod.name.to_sym)
+#            pod.build_configurations.each do |config|
+#                config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+#            end
+#        end
+#    end
+#end
+
+
+
 post_install do |installer|
-    installer.pods_project.targets.each do |pod|
-      flutter_additional_ios_build_settings(pod)
-#        pods = {'FawryPaySDK': '0.1.27'}
-        pods = {'Alamofire':'5.8.1'}
-        if pods.has_key?(pod.name.to_sym)
-            pod.build_configurations.each do |config|
-                config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
-            end
+    installer.pods_project.targets.each do |target|
+      flutter_additional_ios_build_settings(target)
+        target.build_configurations.each do |config|
+            config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
         end
     end
 end

@@ -5,11 +5,8 @@ PODS:
     - FawryPaySDK
     - Flutter
     - IQKeyboardManagerSwift
-    - MBRadioButton
     - RxSwift
     - SDWebImage
-    - SVProgressHUD
-    - SwiftMessages
   - FawryPaySDK (0.1.28):
     - Alamofire
     - IQKeyboardManagerSwift (~> 6.5.11)
@@ -58,18 +55,11 @@ PODS:
   - GoogleUtilities/UserDefaults (7.12.0):
     - GoogleUtilities/Logger
   - IQKeyboardManagerSwift (6.5.16)
-  - MBRadioButton (1.4)
   - PromisesObjC (2.3.1)
   - RxSwift (6.5.0)
   - SDWebImage (5.15.8):
     - SDWebImage/Core (= 5.15.8)
   - SDWebImage/Core (5.15.8)
-  - SVProgressHUD (2.3.1):
-    - SVProgressHUD/Core (= 2.3.1)
-  - SVProgressHUD/Core (2.3.1)
-  - SwiftMessages (9.0.9):
-    - SwiftMessages/App (= 9.0.9)
-  - SwiftMessages/App (9.0.9)
 
 DEPENDENCIES:
   - fawry_sdk (from `.symlinks/plugins/fawry_sdk/ios`)
@@ -84,12 +74,9 @@ SPEC REPOS:
     - GoogleMaps
     - GoogleUtilities
     - IQKeyboardManagerSwift
-    - MBRadioButton
     - PromisesObjC
     - RxSwift
     - SDWebImage
-    - SVProgressHUD
-    - SwiftMessages
 
 EXTERNAL SOURCES:
   fawry_sdk:
@@ -101,20 +88,17 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: 3ca42e259043ee0dc5c0cdd76c4bc568b8e42af7
-  fawry_sdk: 9874bb74160a3c545e034792752762a07abaee6a
+  fawry_sdk: aec91b7fac1248da7ed5380f534b3de60e43c724
   FawryPaySDK: 18c287342ca74e9c2982b30ab55a1145c42c96ab
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   google_maps_flutter_ios: d1318b4ff711612cab16862d7a87e31a7403d458
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
   IQKeyboardManagerSwift: 12d89768845bb77b55cc092ecc2b1f9370f06b76
-  MBRadioButton: dcf111c9bb633d4cf6e83200d804af6e025033c8
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
   SDWebImage: cb032eba469c54e0000e78bcb0a13cdde0a52798
-  SVProgressHUD: 4837c74bdfe2e51e8821c397825996a8d7de6e22
-  SwiftMessages: 1a23aef303fa7bb26ad802880746cf8358e378fe
 
-PODFILE CHECKSUM: b3d21621f0e4394a8a0dc4341eb8b5fc30356ccc
+PODFILE CHECKSUM: 1e85ab5f45d7765b1ba63597e630d11995648015
 
 COCOAPODS: 1.14.3

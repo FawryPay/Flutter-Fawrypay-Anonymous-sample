@@ -14,8 +14,8 @@ import 'package:fawry_sdk/model/payment_methods.dart';
 import 'package:fawry_sdk/model/response.dart';
 
 class Constants {
-  static const String merchantCode = "+/IAAY2notgLsdUB9VeTFg==";
-  static const String secureKey = "69826c87-963d-47b7-8beb-869f7461fd93";
+  static const String merchantCode = "+/IAAY2nothN6tNlekupwA==";
+  static const String secureKey = "4b815c12-891c-42ab-b8de-45bd6bd02c3d";
   static const String baseUrl = "https://atfawry.fawrystaging.com";
 }
 
@@ -75,7 +75,7 @@ FawryLaunchModel model = FawryLaunchModel(
   launchCustomerModel: customerModel,
   launchMerchantModel: FawryService.getMerchantModel(),
   skipLogin: true,
-  skipReceipt: true,
+  skipReceipt: false,
   payWithCardToken: false,
   paymentMethods: PaymentMethods.ALL,
 );
