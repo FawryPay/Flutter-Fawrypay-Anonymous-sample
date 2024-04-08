@@ -25,13 +25,16 @@ Welcome to the comprehensive Fawry SDK Integration Guide. This guide will walk y
 
 ## Getting Started
 
+#### How it works
+![Fawrypay SDK Explained](https://raw.githubusercontent.com/FawryPay/Android-Fawrypay-Anonymous-sample/master/Docs/4.jpg)
+
 ### Adding Fawry SDK Plugin
 
 To begin, add the Fawry SDK plugin to your Flutter project's dependencies. Open your `pubspec.yaml` file and add the following line:
 
 ```yaml
 dependencies:
-  fawry_sdk: ^2.0.4
+  fawry_sdk: ^2.0.7
 ```
 
 ### Android Setup
@@ -202,6 +205,15 @@ This will enable you to handle different responses and outcomes from the Fawry S
 | skipLogin               | Boolean                          | optional - default value = true  | to skip login screen in which we take email and mobile   | \-          |
 | authCaptureMode         | Boolean                          | optional - default value = false                                                                                                                                | depends on refund configuration: will be true when refund is enabled and false when refund is disabled                                                                                             | false       |
 | paymentMethod        | PaymentMethods         | Optional - default value = .ALL | If the user needs to show only one payment method. | PaymentMethods.ALL |
+
+<br/>Additional Required Parameters
+
+| PARAMETER  | TYPE    | REQUIRED | DESCRIPTION | EXAMPLE |
+|------------|---------|----------|-------------|---------|
+| **baseUrl** | String  | required | Provided by the support team. Use the staging URL for testing and switch for production to go live. | Staging: `https://atfawry.fawrystaging.com/`<br/>Production: `https://atfawry.com/` |
+| **lang**   | String  | required | SDK language which will affect the SDK's interface languages. | `FawrySDK.LANGUAGE_ENGLISH` |
+
+
 
 **Notes:**
 
