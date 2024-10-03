@@ -27,17 +27,15 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  crypto: 3.0.1
-  cupertino_icons: ^1.0.2
-  fawry_sdk: ^2.0.7
-  google_maps_flutter: ^2.5.3
-  google_maps_flutter_android: ^2.6.2
+  crypto: ^3.0.5
+  cupertino_icons: ^1.0.8
+  fawry_sdk: ^2.0.9
 
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  flutter_lints: ^2.0.0
+  flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
 

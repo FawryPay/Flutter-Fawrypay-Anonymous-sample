@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
@@ -14,8 +13,8 @@ import 'package:fawry_sdk/model/payment_methods.dart';
 import 'package:fawry_sdk/model/response.dart';
 
 class Constants {
-  static const String merchantCode = "+/IAAY2nothN6tNlekupwA==";
-  static const String secureKey = "4b815c12-891c-42ab-b8de-45bd6bd02c3d";
+  static const String merchantCode = "770000019834";
+  static const String secureKey = "6c65ee7b-9a31-49fb-9630-ca5546f6037a";
   static const String baseUrl = "https://atfawry.fawrystaging.com";
 }
 
@@ -75,7 +74,7 @@ FawryLaunchModel model = FawryLaunchModel(
   launchCustomerModel: customerModel,
   launchMerchantModel: FawryService.getMerchantModel(),
   skipLogin: true,
-  skipReceipt: false,
+  skipReceipt: true,
   payWithCardToken: false,
   paymentMethods: PaymentMethods.ALL,
 );
@@ -111,19 +110,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late StreamSubscription? _fawryCallbackResultStream;
-  final Completer<GoogleMapController> _controller =
-      Completer<GoogleMapController>();
 
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
 
-  static const CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+
 
   @override
   void initState() {
@@ -200,10 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await FawryService().openCardsManager(model);
   }
 
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -218,15 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Center(
             child: Text(currentPlatform()),
           ),
-          Flexible(
-            child: GoogleMap(
-              mapType: MapType.hybrid,
-              initialCameraPosition: _kGooglePlex,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-              },
-            ),
-          ),
+
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
@@ -243,13 +221,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     await openCardsManager();
                   },
                   child: const Text('Manage Cards'),
-                ),
-                const SizedBox(height: 5.0),
-                ElevatedButton(
-                  onPressed: () async {
-                    await _goToTheLake();
-                  },
-                  child: const Text('Open Google Maps To Lake'),
                 ),
               ],
             ),
