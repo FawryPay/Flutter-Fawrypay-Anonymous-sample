@@ -15,7 +15,7 @@ import 'package:fawry_sdk/model/response.dart';
 class Constants {
   static const String merchantCode = "770000019834";
   static const String secureKey = "6c65ee7b-9a31-49fb-9630-ca5546f6037a";
-  static const String baseUrl = "https://atfawry.fawrystaging.com";
+  static const String baseUrl = "https://atfawry.fawrystaging.com/";
 }
 
 class FawryService {
