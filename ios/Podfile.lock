@@ -1,13 +1,14 @@
 PODS:
   - Alamofire (5.9.1)
-  - fawry_sdk (1.0.76):
+  - fawry_sdk (2.0.10):
     - Alamofire
     - FawryPaySDK
     - Flutter
     - IQKeyboardManagerSwift
     - RxSwift
     - SDWebImage
-  - FawryPaySDK (0.1.33):
+    - SwiftMessages
+  - FawryPaySDK (0.1.36):
     - Alamofire
     - IQKeyboardManagerSwift (~> 6.5.11)
     - RxSwift (~> 6.5.0)
@@ -58,6 +59,9 @@ PODS:
   - SDWebImage (5.15.8):
     - SDWebImage/Core (= 5.15.8)
   - SDWebImage/Core (5.15.8)
+  - SwiftMessages (10.0.1):
+    - SwiftMessages/App (= 10.0.1)
+  - SwiftMessages/App (10.0.1)
 
 DEPENDENCIES:
   - fawry_sdk (from `.symlinks/plugins/fawry_sdk/ios`)
@@ -72,6 +76,7 @@ SPEC REPOS:
     - IQKeyboardManagerSwift
     - RxSwift
     - SDWebImage
+    - SwiftMessages
 
 EXTERNAL SOURCES:
   fawry_sdk:
@@ -81,14 +86,15 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: f36a35757af4587d8e4f4bfa223ad10be2422b8c
-  fawry_sdk: 91776be856dc3304baf76b63ad1852956b3b6548
-  FawryPaySDK: 265309bf70543952efaa9244149a4438c330f421
+  fawry_sdk: 5706b808294fd01d4b915f47a3210f3befb8a401
+  FawryPaySDK: cdba3df1e6e9b1737e17a0fb602ec8496b3bfe76
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   IQKeyboardManagerSwift: 12d89768845bb77b55cc092ecc2b1f9370f06b76
   RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
   SDWebImage: cb032eba469c54e0000e78bcb0a13cdde0a52798
+  SwiftMessages: 759b4a0bf5c3a116a0d7e8a34b098ba83c458625
 
-PODFILE CHECKSUM: 37432bab442c353f99e83c0dc7a11919c5db19ed
+PODFILE CHECKSUM: b336aeffaa702df02080c678b6279e892b444fe2
 
 COCOAPODS: 1.15.2
