@@ -74,7 +74,7 @@ FawryLaunchModel model = FawryLaunchModel(
   launchCustomerModel: customerModel,
   launchMerchantModel: FawryService.getMerchantModel(),
   skipLogin: true,
-  skipReceipt: true,
+  skipReceipt: false,
   payWithCardToken: false,
   paymentMethods: PaymentMethods.ALL,
 );
