@@ -34,7 +34,7 @@ To begin, add the Fawry SDK plugin to your Flutter project's dependencies. Open 
 
 ```yaml
 dependencies:
-  fawry_sdk: ^2.0.11
+   fawry_sdk: ^2.0.12
 ```
 
 ### Android Setup
@@ -46,11 +46,11 @@ To integrate with Android, follow these steps:
 ```xml
 <!-- Add this code inside the <application> tag -->
 <application
-    android:allowBackup="false"
-    android:icon="@mipmap/ic_launcher"
-    android:label="Your App Label"
-    tools:replace="android:label">
-    <!-- Remove 'android:label' from tools:replace if not defining a label -->
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Your App Label"
+        tools:replace="android:label">
+   <!-- Remove 'android:label' from tools:replace if not defining a label -->
 </application>
 ```
 
@@ -58,9 +58,9 @@ To integrate with Android, follow these steps:
 
 ```groovy
 android {
-    compileSdkVersion flutter.compileSdkVersion
-    minSdkVersion 21
-    // ...
+   compileSdkVersion flutter.compileSdkVersion
+   minSdkVersion 21
+   // ...
 }
 ```
 
@@ -107,56 +107,65 @@ You can stream the result data that comes from the Fawry SDK to handle different
 // Add this code in your Dart file
 late StreamSubscription? _fawryCallbackResultStream;
 
-  @override
-  void initState() {
-    super.initState();
-    initSDKCallback();
-  }
+@override
+void initState() {
+   super.initState();
+   initSDKCallback();
+}
 
-  @override
-  void dispose() {
-    _fawryCallbackResultStream?.cancel();
-    super.dispose();
-  }
+@override
+void dispose() {
+   _fawryCallbackResultStream?.cancel();
+   super.dispose();
+}
 
-  Future<void> initSDKCallback() async {
-    try {
+Future<void> initSDKCallback() async {
+   try {
       _fawryCallbackResultStream =
-          FawrySdk.instance.callbackResultStream().listen((event) {
-        setState(() {
-          ResponseStatus response = ResponseStatus.fromJson(jsonDecode(event));
-          handleResponse(response);
-        });
-      });
-    } catch (ex) {
+              FawrySDK.instance.callbackResultStream().listen((event) {
+                 setState(() {
+                    ResponseStatus response = ResponseStatus.fromJson(jsonDecode(event));
+                    handleResponse(response);
+                 });
+              });
+   } catch (ex) {
       debugPrint(ex.toString());
-    }
-  }
+   }
+}
 
-  void handleResponse(ResponseStatus response) {
-    switch (response.status) {
-      case FawrySdk.RESPONSE_SUCCESS:
-        {
-          debugPrint('Message: ${response.message}');
-          debugPrint('Json Response: ${response.data}');
-        }
-        break;
-      case FawrySdk.RESPONSE_ERROR:
-        {
-          debugPrint('Error: ${response.message}');
-        }
-        break;
-      case FawrySdk.RESPONSE_PAYMENT_COMPLETED:
-        {
-          debugPrint(
-              'Payment Completed: ${response.message}, ${response.data}');
-        }
-        break;
-    }
-  }
+void handleResponse(ResponseStatus response) {
+   switch (response.status) {
+      case FawrySDK.RESPONSE_SUCCESS:
+         {
+            debugPrint('Message: ${response.message}');
+            debugPrint('Json Response: ${response.data}');
+         }
+         break;
+      case FawrySDK.RESPONSE_ERROR:
+         {
+            debugPrint('Error: ${response.message}');
+         }
+         break;
+      case FawrySDK.RESPONSE_PAYMENT_COMPLETED:
+         {
+            debugPrint(
+                    'Payment Completed: ${response.message}, ${response.data}');
+         }
+         break;
+   }
+}
 ```
 
 This will enable you to handle different responses and outcomes from the Fawry SDK in a more dynamic way. The `handleResponse` method is where you can customize your actions based on the response status.
+
+<br/>ResponseStatus
+
+| **PARAMETER**     | **TYPE** | **REQUIRED** | **DESCRIPTION**                                 | **EXAMPLE**                                        |
+|---------------|---------------|---------------|---------------|---------------|
+| status      | String   | required     | \-                                              | 100 (in case of success), 101 (in case of error)                                        |
+| message     | String   | optional     | \-                                              | Payment process succeeded |
+| data    | String   | optional     | In Case of success contains json of response data and returned as null in case of error                                          | {"basketPayment":false,"customerProfileId":"12345","expirationTime":"1790081931217","fawryFees":93.0,"merchantRefNumber":"177878280125","orderAmount":"1000.0","orderStatus":"UNPAID","paymentAmount":"1093.0","paymentMethod":"PayAtFawry","referenceNumber":"777015217","signature":"9066e5cbcd87b73661387b8796169c11351853bd26539063782a7d0c69ad66eb","taxes":0.0,"statusCode":200,"statusDescription":"العملية تمت بنجاح .","type":"ChargeResponse"}                                      |
+| error | String   | optional     | In Case of error contains json of error or error message and return ed as null in case of success | \-                                               |
 
 ---
 
@@ -181,6 +190,19 @@ This will enable you to handle different responses and outcomes from the Fawry S
 | merchantRefNum | String   | required            | Merchant's transaction reference number is random 10 alphanumeric digits. | A1YU7MKI09            |
 | secretKey     | String   | required            | provided by support                                                       | 4b8jw3j2-8gjhfrc-4wc4-scde-453dek3d |
 
+<br>LaunchApplePayModel</br>
+- Used only on IOS
+
+| **PARAMETER**  | **TYPE** | **REQUIRED**        | **DESCRIPTION**                                                           | **EXAMPLE**           |
+|---------------|---------------|---------------|---------------|---------------|
+| merchantID   | String   | required            | Merchant ID provided during FawryPay account setup.                       | +/IPO2sghiethhN6tMC== |
+
+<br>LaunchCheckoutModel</br>
+
+| **PARAMETER**  | **TYPE** | **REQUIRED**        | **DESCRIPTION**                                                           | **EXAMPLE**           |
+|---------------|---------------|---------------|---------------|---------------|
+| scheme   | String   | required            | if you need use myfawry as payment method.                       | example scheme |
+
 <br/>ChargeItemsParamsModel
 
 | **PARAMETER** | **TYPE** | **REQUIRED** | **DESCRIPTION** | **EXAMPLE**         |
@@ -196,6 +218,8 @@ This will enable you to handle different responses and outcomes from the Fawry S
 |---------------|---------------|---------------|---------------|---------------|
 | **launchCustomerModel** | LaunchCustomerModel | optional | Customer information.         | \-          |
 | **launchMerchantModel** | LaunchMerchantModel | required | Merchant information.         | \-          |
+| **launchCheckoutModel**        | LaunchCheckoutModel           | optional   | if you need use myfawry as payment method.      
+| **launchApplePayModel** | LaunchApplePayModel | optional | Used only on IOS.         | \-          |
 | **chargeItems**         | [ChargeItemsParamsModel]      | required       | Array of items which the user will buy, this array must be of type ChargeItemsParamsModel  | \-          |
 | signature               | String    | optional  | You can create your own signature by concatenate the following elements on the same order and hash the result using **SHA-256** as explained:"merchantCode + merchantRefNum + customerProfileId (if exists, otherwise insert"") + itemId + quantity + Price (in tow decimal format like '10.00') + Secure hash keyIn case of the order contains multiple items the list will be **sorted** by itemId and concatenated one by one for example itemId1+ Item1quantity + Item1price + itemId2 + Item2quantity + Item2price | \-          | 
 | allowVoucher            | Boolean  | optional - default value = false  | True if your account supports voucher code | \-          |
@@ -222,38 +246,38 @@ This will enable you to handle different responses and outcomes from the Fawry S
 ### Example
 
 ```dart
- 
+
 BillItem item = BillItem(
-  itemId: 'Item1',
-  description: 'Book',
-  quantity: 6,
-  price: 50,
+   itemId: 'Item1',
+   description: 'Book',
+   quantity: 6,
+   price: 50,
 );
 
 List<BillItem> chargeItems = [item];
 
 LaunchCustomerModel customerModel = LaunchCustomerModel(
-  customerProfileId: '533518',
-  customerName: 'John Doe',
-  customerEmail: 'john.doe@xyz.com',
-  customerMobile: '+201000000000',
+   customerProfileId: '533518',
+   customerName: 'John Doe',
+   customerEmail: 'john.doe@xyz.com',
+   customerMobile: '+201000000000',
 );
 
 LaunchMerchantModel merchantModel = LaunchMerchantModel(
-  merchantCode: 'YOUR MERCHANT CODE',
-  merchantRefNum: FawryUtils.randomAlphaNumeric(10),
-  secureKey: 'YOUR SECURE KEY',
+   merchantCode: 'YOUR MERCHANT CODE',
+   merchantRefNum: FawryUtils.randomAlphaNumeric(10),
+   secureKey: 'YOUR SECURE KEY',
 );
 
 FawryLaunchModel model = FawryLaunchModel(
-  allow3DPayment: true,
-  chargeItems: chargeItems,
-  launchCustomerModel: customerModel,
-  launchMerchantModel: merchantModel,
-  skipLogin: true,
-  skipReceipt: true,
-  payWithCardToken: false,
-  paymentMethods: PaymentMethods.ALL,
+   allow3DPayment: true,
+   chargeItems: chargeItems,
+   launchCustomerModel: customerModel,
+   launchMerchantModel: merchantModel,
+   skipLogin: true,
+   skipReceipt: true,
+   payWithCardToken: false,
+   paymentMethods: PaymentMethods.ALL,
 );
 
 String baseUrl = "https://atfawry.fawrystaging.com/";
@@ -264,11 +288,11 @@ String baseUrl = "https://atfawry.fawrystaging.com/";
 
 ```dart
 Future<void> startPayment() async {
-  await FawrySDK.instance.startPayment(
-    launchModel: model,
-    baseURL: baseUrl,
-    lang: FawrySDK.LANGUAGE_ENGLISH,
-  );
+   await FawrySDK.instance.startPayment(
+      launchModel: model,
+      baseURL: baseUrl,
+      lang: FawrySDK.LANGUAGE_ENGLISH,
+   );
 }
 ```
 
@@ -276,11 +300,11 @@ Future<void> startPayment() async {
 
 ```dart
 Future<void> openCardsManager() async {
-  await FawrySDK.instance.openCardsManager(
-    launchModel: model,
-    baseURL: baseUrl,
-    lang: FawrySDK.LANGUAGE_ENGLISH,
-  );
+   await FawrySDK.instance.openCardsManager(
+      launchModel: model,
+      baseURL: baseUrl,
+      lang: FawrySDK.LANGUAGE_ENGLISH,
+   );
 }
 ```
 
@@ -299,8 +323,8 @@ Future<void> openCardsManager() async {
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="fawry_blue">#6F61C0</color> <!-- Set your primary color hex code -->
-    <color name="fawry_yellow">#A084E8</color> <!-- Set your secondary color hex code -->
+   <color name="fawry_blue">#6F61C0</color> <!-- Set your primary color hex code -->
+   <color name="fawry_yellow">#A084E8</color> <!-- Set your secondary color hex code -->
 </resources>
 ```
 
@@ -316,16 +340,16 @@ Future<void> openCardsManager() async {
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-    <key>primaryColorHex</key>
-    <string>#6F61C0</string> <!-- Set your primary color hex code -->
-    <key>secondaryColorHex</key>
-    <string>#A084E8</string> <!-- Set your secondary color hex code -->
-    <key>tertiaryColorHex</key>
-    <string>#8BE8E5</string> <!-- Set your tertiary color hex code -->
-    <key>headerColorHex</key>
-    <string>#6F61C0</string> <!-- Set your header color hex code -->
-</dict>
+   <dict>
+      <key>primaryColorHex</key>
+      <string>#6F61C0</string> <!-- Set your primary color hex code -->
+      <key>secondaryColorHex</key>
+      <string>#A084E8</string> <!-- Set your secondary color hex code -->
+      <key>tertiaryColorHex</key>
+      <string>#8BE8E5</string> <!-- Set your tertiary color hex code -->
+      <key>headerColorHex</key>
+      <string>#6F61C0</string> <!-- Set your header color hex code -->
+   </dict>
 </plist>
 ```
 
@@ -339,11 +363,11 @@ If you experience an issue in release mode not present in debug mode, you can ad
 // ... (previous code)
 
 buildTypes {
-    release {
-        minifyEnabled false
-        shrinkResources false
-        // ...
-    }
+   release {
+      minifyEnabled false
+      shrinkResources false
+      // ...
+   }
 }
 ```
 

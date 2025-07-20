@@ -1,118 +1,44 @@
-import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+import 'dart:io';
 
-import 'package:fawry_sdk/fawry_sdk.dart';
-import 'package:fawry_sdk/fawry_utils.dart';
 import 'package:fawry_sdk/model/bill_item.dart';
 import 'package:fawry_sdk/model/fawry_launch_model.dart';
+import 'package:fawry_sdk/model/launch_apple_pay_model.dart';
+import 'package:fawry_sdk/model/launch_checkout_model.dart';
 import 'package:fawry_sdk/model/launch_customer_model.dart';
 import 'package:fawry_sdk/model/launch_merchant_model.dart';
 import 'package:fawry_sdk/model/payment_methods.dart';
+import 'package:flutter/material.dart';
+import 'dart:async';
+
+import 'package:flutter/services.dart';
+import 'package:fawry_sdk/fawry_sdk.dart';
 import 'package:fawry_sdk/model/response.dart';
+import 'package:fawry_sdk/fawry_utils.dart';
 
 class Constants {
-  static const String merchantCode = "770000019834";
-  static const String secureKey = "6c65ee7b-9a31-49fb-9630-ca5546f6037a";
+  static String merchantCode = '+/IAAY2nothN6tNlekupwA==';
+
+  static String secureKey = "4b815c12-891c-42ab-b8de-45bd6bd02c3d";
+
   static const String baseUrl = "https://atfawry.fawrystaging.com/";
 }
-
-class FawryService {
-  static LaunchMerchantModel getMerchantModel() {
-    return LaunchMerchantModel(
-      merchantCode: Constants.merchantCode,
-      merchantRefNum: FawryUtils.randomAlphaNumeric(10),
-      secureKey: Constants.secureKey,
-    );
-  }
-
-  Future<void> startPayment(FawryLaunchModel model) async {
-    try {
-      await FawrySDK.instance.startPayment(
-        launchModel: model,
-        baseURL: Constants.baseUrl,
-        lang: FawrySDK.LANGUAGE_ENGLISH,
-      );
-    } catch (e) {
-      debugPrint('Error starting payment: $e');
-    }
-  }
-
-  Future<void> openCardsManager(FawryLaunchModel model) async {
-    try {
-      await FawrySDK.instance.openCardsManager(
-        launchModel: model,
-        baseURL: Constants.baseUrl,
-        lang: FawrySDK.LANGUAGE_ENGLISH,
-      );
-    } catch (e) {
-      debugPrint('Error opening cards manager: $e');
-    }
-  }
-}
-
-BillItem item = BillItem(
-  itemId: 'ITEM_ID',
-  description: '',
-  quantity: 5,
-  price: 50,
-);
-
-List<BillItem> chargeItems = [item];
-
-LaunchCustomerModel customerModel = LaunchCustomerModel(
-  customerProfileId: '533518',
-  customerName: 'John Doe',
-  customerEmail: 'john.doe@xyz.com',
-  customerMobile: '+201000000000',
-);
-
-FawryLaunchModel model = FawryLaunchModel(
-  allow3DPayment: true,
-  chargeItems: chargeItems,
-  launchCustomerModel: customerModel,
-  launchMerchantModel: FawryService.getMerchantModel(),
-  skipLogin: true,
-  skipReceipt: false,
-  payWithCardToken: false,
-  paymentMethods: PaymentMethods.ALL,
-);
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Fawry SDK Flutter',
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData.dark(
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(),
-    );
-  }
+  State<MyApp> createState() => _MyAppState();
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class _MyAppState extends State<MyApp> {
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
 
-class _MyHomePageState extends State<MyHomePage> {
   late StreamSubscription? _fawryCallbackResultStream;
-
-
-
 
   @override
   void initState() {
@@ -131,11 +57,31 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       _fawryCallbackResultStream =
           FawrySDK.instance.callbackResultStream().listen((event) {
-        setState(() {
-          ResponseStatus response = ResponseStatus.fromJson(jsonDecode(event));
-          handleResponse(response);
-        });
-      });
+            setState(() {
+              ResponseStatus response = ResponseStatus.fromJson(jsonDecode(event));
+              switch (response.status) {
+                case FawrySDK.RESPONSE_SUCCESS:
+                  {
+                    //Success status
+                    debugPrint('Message : ${response.message}');
+                    //Success json response
+                    debugPrint('Json Response : ${response.data}');
+                  }
+                  break;
+                case FawrySDK.RESPONSE_ERROR:
+                  {
+                    debugPrint('Error : ${response.message}');
+                  }
+                  break;
+                case FawrySDK.RESPONSE_PAYMENT_COMPLETED:
+                  {
+                    debugPrint(
+                        'Payment Completed : ${response.message} , ${response.data}');
+                  }
+                  break;
+              }
+            });
+          });
     } catch (ex) {
       debugPrint(ex.toString());
     }
@@ -164,68 +110,135 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // Get the current platform
-  String currentPlatform() {
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-        return 'Current platform --> Android';
-      case TargetPlatform.iOS:
-        return 'Current platform --> iOS';
-      default:
-        return 'Current platform --> Unknown';
+  LaunchMerchantModel getMerchantModel() {
+    return LaunchMerchantModel(
+      merchantCode: Constants.merchantCode,
+      merchantRefNum: FawryUtils.randomAlphaNumeric(10),
+      secureKey: Constants.secureKey,
+    );
+  }
+
+  LaunchApplePayModel getApplePayModel() {
+    return LaunchApplePayModel(merchantID: "merchant.NUMUMARKET"
+
+    );
+  }
+
+  LaunchCheckoutModel getCheckoutModel() {
+    return LaunchCheckoutModel(
+      scheme: "myfawry",
+    );
+  }
+
+  FawryLaunchModel buildLaunchModel() {
+    BillItem item1 = BillItem(
+      itemId: 'item1',
+      description: 'Item 1',
+      quantity: 1,
+      price: 300.00,
+    );
+    BillItem item2 = BillItem(
+      itemId: 'item2',
+      description: 'Item 2',
+      quantity: 1,
+      price: 200.00,
+    );
+    BillItem item3 = BillItem(
+      itemId: 'item3',
+      description: 'Item 3',
+      quantity: 1,
+      price: 500.00,
+    );
+
+    List<BillItem> chargeItems = [item1, item2, item3];
+    LaunchCustomerModel customerModel = LaunchCustomerModel(
+      customerName: 'Ahmed Kamal',
+      customerMobile: '+1234567890',
+      customerEmail: 'ahmed.kamal@example.com',
+      customerProfileId: '12345',
+      //customerProfileId: '280926',
+    );
+
+    return FawryLaunchModel(
+      allow3DPayment: true,
+      chargeItems: chargeItems,
+      launchCustomerModel: customerModel,
+      launchMerchantModel: LaunchMerchantModel(
+        merchantCode: Constants.merchantCode,
+        secureKey: Constants.secureKey,
+        merchantRefNum: DateTime.now().millisecondsSinceEpoch.toString(), // to match Kotlin’s timestamp logic
+      ),
+      skipLogin: true,
+      skipReceipt: false,
+      payWithCardToken: true,
+      paymentMethods: PaymentMethods.ALL,
+      launchApplePayModel: getApplePayModel(),
+      launchCheckOutModel: getCheckoutModel(),
+    );
+  }
+
+
+
+  var paymentMethod =PaymentMethods.ALL;
+  var language = FawrySDK.LANGUAGE_ARABIC;
+
+
+
+
+  Future<void> _startPayment() async {
+    try {
+
+      debugPrint("Starting payment with base URL: ${Constants.baseUrl}");
+      FawrySDK.instance.startPayment(
+        baseURL: Constants.baseUrl,
+        lang: language,
+        launchModel: buildLaunchModel(),
+
+
+
+      );
+    } on PlatformException catch (e) {
+      debugPrint("Failed to start payment: ${e.message}");
     }
   }
 
-  // Initialize Fawry SDK with required parameters
-  Future<void> startPayment() async {
-    model.launchMerchantModel.merchantRefNum =
-        FawryUtils.randomAlphaNumeric(10);
-    await FawryService().startPayment(model);
+  Future<void> _manageCards() async {
+    try {
+      debugPrint("Starting manageCards with base URL: ${Constants.baseUrl}");
+      FawrySDK.instance.manageCards(
+        baseURL: Constants.baseUrl,
+        lang: language,
+        launchModel: buildLaunchModel(),
+
+      );
+    } on PlatformException catch (e) {
+      debugPrint("Failed to manage cards: ${e.message}");
+    }
   }
-
-  Future<void> openCardsManager() async {
-    model.launchMerchantModel.merchantRefNum =
-        FawryUtils.randomAlphaNumeric(10);
-    await FawryService().openCardsManager(model);
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Fawry SDK Flutter example'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(currentPlatform()),
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Fawry SDK Example'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: _startPayment,
+                child: const Text("Start Payment"),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _manageCards,
+                child: const Text("Manage Cards"),
+              ),
+            ],
           ),
-
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    await startPayment();
-                  },
-                  child: const Text('Checkout / Pay'),
-                ),
-                const SizedBox(height: 5.0),
-                ElevatedButton(
-                  onPressed: () async {
-                    await openCardsManager();
-                  },
-                  child: const Text('Manage Cards'),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
