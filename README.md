@@ -64,6 +64,20 @@ android {
 }
 ```
 
+3. Open `android/build.gradle` and add the FawryPay repository:
+
+```gradle
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://nexusmobile.fawrystaging.com:2597/repository/maven-public/" }
+        maven { url "https://maven.google.com" }
+        jcenter()
+    }
+}
+```
+
 **Notice:** Make sure to upgrade your Kotlin version to 1.9.0 to ensure compatibility with the Fawry SDK
 
 ### iOS Setup
