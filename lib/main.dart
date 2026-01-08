@@ -1,6 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-
+import 'package:fawry_sdk/fawry_sdk.dart';
 import 'package:fawry_sdk/model/bill_item.dart';
 import 'package:fawry_sdk/model/fawry_launch_model.dart';
 import 'package:fawry_sdk/model/launch_apple_pay_model.dart';
@@ -8,22 +8,195 @@ import 'package:fawry_sdk/model/launch_checkout_model.dart';
 import 'package:fawry_sdk/model/launch_customer_model.dart';
 import 'package:fawry_sdk/model/launch_merchant_model.dart';
 import 'package:fawry_sdk/model/payment_methods.dart';
-import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
-import 'package:fawry_sdk/fawry_sdk.dart';
 import 'package:fawry_sdk/model/response.dart';
-import 'package:fawry_sdk/fawry_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
+import 'package:uuid/uuid.dart';
 
-class Constants {
-  static String merchantCode = '+/IAAY2nothN6tNlekupwA==';
+// import your SDK
+// import 'package:fawry_sdk/fawry_sdk.dart';
 
-  static String secureKey = "4b815c12-891c-42ab-b8de-45bd6bd02c3d";
+final _uuid = const Uuid();
 
-  static const String baseUrl = "https://atfawry.fawrystaging.com/";
+/// =======================================================
+/// CONSTANTS
+/// =======================================================
+
+final List<BillItem> cartItems = [
+  BillItem(
+    itemId: 'EGMHOC23DP11',
+    quantity: 1,
+    price: 1000,
+    description: 'Item 1 Description',
+  ),
+];
+
+LaunchMerchantModel get merchant => LaunchMerchantModel(
+  merchantCode: Constants.merchantCode,
+  merchantRefNum: _uuid.v4(),
+  //if you need to use signature you don't need to pass secureKey
+  secureKey: Constants.merchantSecretCode,
+);
+
+
+LaunchCustomerModel get customer => LaunchCustomerModel(
+  customerName: 'Ahmed Kamal',
+  customerMobile: '+1234567890',
+  customerEmail: 'ahmed.kamal@example.com',
+  customerProfileId: '280926',
+);
+
+LaunchApplePayModel getApplePayModel() {
+  return LaunchApplePayModel(merchantID: "merchant.NUMUMARKET");
 }
 
+LaunchCheckoutModel getCheckoutModel() {
+  return LaunchCheckoutModel(
+    scheme: "myfawry",
+  );
+}
+
+/// =======================================================
+/// SIGNATURE GENERATION
+/// =======================================================
+String generateFawrySignature({
+  required String merchantCode,
+  required String merchantRefNum,
+  required String customerProfileId,
+  required List<BillItem> items,
+  bool isPaymentSignature = true,
+}) {
+  final validItems = items.where((item) =>
+  item.itemId.isNotEmpty &&
+      item.quantity != 0 &&
+      item.price != 0).toList();
+
+  if (validItems.isEmpty) {
+    throw Exception('No valid items found for signature generation');
+  }
+
+  // Sort by itemId
+  validItems.sort((a, b) => a.itemId.compareTo(b.itemId));
+
+  String formatPrice(String value) {
+    final parsed = double.tryParse(value) ?? 0;
+    return parsed.toStringAsFixed(2);
+  }
+
+  final itemsString = validItems.map((item) {
+    return '${item.itemId}${item.quantity}${formatPrice(item.price?.toString() ?? "0")}';
+  }).join();
+
+  final signatureString =
+      merchantCode +
+          (isPaymentSignature ? merchantRefNum : '') +
+          customerProfileId +
+          (isPaymentSignature ? itemsString : '') +
+          Constants.merchantSecretCode;
+
+  if (isPaymentSignature) {
+    debugPrint('[FAWRY][Flutter] *********** paymentSignature ***********');
+  } else {
+    debugPrint('[FAWRY][Flutter] *********** tokenizationSignature ***********');
+  }
+
+  debugPrint('[FAWRY][Flutter] merchantCode: $merchantCode');
+  if (isPaymentSignature) {
+    debugPrint('[FAWRY][Flutter] merchantRefNum: $merchantRefNum');
+  }
+  debugPrint('[FAWRY][Flutter] customerProfileId: $customerProfileId');
+  if (isPaymentSignature) {
+    debugPrint('[FAWRY][Flutter] itemsString: $itemsString');
+  }
+  debugPrint('[FAWRY][Flutter] secureHashKey: ${Constants.merchantSecretCode}');
+  debugPrint('[FAWRY][Flutter] signatureString: $signatureString');
+
+  final hash = sha256.convert(utf8.encode(signatureString)).toString();
+
+  debugPrint('[FAWRY][Flutter] hashString: $hash');
+
+  return hash;
+}
+
+/// =======================================================
+/// BUILD LAUNCH MODEL
+/// =======================================================
+FawryLaunchModel buildLaunchModel() {
+  var launchMerchantModel = merchant;
+
+  final paymentSignature = generateFawrySignature(
+    merchantCode: launchMerchantModel.merchantCode,
+    merchantRefNum: launchMerchantModel.merchantRefNum,
+    customerProfileId: customer.customerProfileId ?? "",
+    items: cartItems,
+    isPaymentSignature: true,
+  );
+
+  final tokenizationSignature = generateFawrySignature(
+    merchantCode: launchMerchantModel.merchantCode,
+    merchantRefNum: launchMerchantModel.merchantRefNum,
+    customerProfileId: customer.customerProfileId ?? "",
+    items: cartItems,
+    isPaymentSignature: false,
+  );
+
+  return FawryLaunchModel(
+    //paymentSignature: paymentSignature,
+    //tokenizationSignature: tokenizationSignature,
+    allow3DPayment: true,
+    skipReceipt: false,
+    skipLogin: true,
+    payWithCardToken: true,
+    chargeItems: cartItems,
+    paymentMethods: PaymentMethods.ALL,
+    launchMerchantModel: launchMerchantModel,
+    launchCustomerModel: customer,
+    launchApplePayModel: getApplePayModel(),
+    launchCheckOutModel: getCheckoutModel(),
+  );
+}
+
+/// =======================================================
+/// START PAYMENT
+/// =======================================================
+Future<void> _startPayment() async {
+  try {
+
+    debugPrint("Starting payment with base URL: ${Constants.baseUrl}");
+    FawrySDK.instance.startPayment(
+      baseURL: Constants.baseUrl,
+      lang: Constants.lang,
+      launchModel: buildLaunchModel(),
+
+
+
+    );
+  } on PlatformException catch (e) {
+    debugPrint("Failed to start payment: ${e.message}");
+  }
+}
+
+/// =======================================================
+/// MANAGE CARDS
+/// =======================================================
+Future<void> _manageCards() async {
+  try {
+    debugPrint("Starting manageCards with base URL: ${Constants.baseUrl}");
+    FawrySDK.instance.manageCards(
+      baseURL: Constants.baseUrl,
+      lang: Constants.lang,
+      launchModel: buildLaunchModel(),
+
+    );
+  } on PlatformException catch (e) {
+    debugPrint("Failed to manage cards: ${e.message}");
+  }
+}
+
+/// =======================================================
+/// UI
+/// =======================================================
 void main() {
   runApp(const MyApp());
 }
@@ -36,7 +209,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
 
   late StreamSubscription? _fawryCallbackResultStream;
 
@@ -110,131 +282,25 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  LaunchMerchantModel getMerchantModel() {
-    return LaunchMerchantModel(
-      merchantCode: Constants.merchantCode,
-      merchantRefNum: FawryUtils.randomAlphaNumeric(10),
-      secureKey: Constants.secureKey,
-    );
-  }
-
-  LaunchApplePayModel getApplePayModel() {
-    return LaunchApplePayModel(merchantID: "merchant.NUMUMARKET"
-
-    );
-  }
-
-  LaunchCheckoutModel getCheckoutModel() {
-    return LaunchCheckoutModel(
-      scheme: "myfawry",
-    );
-  }
-
-  FawryLaunchModel buildLaunchModel() {
-    BillItem item1 = BillItem(
-      itemId: 'item1',
-      description: 'Item 1',
-      quantity: 1,
-      price: 300.00,
-    );
-    BillItem item2 = BillItem(
-      itemId: 'item2',
-      description: 'Item 2',
-      quantity: 1,
-      price: 200.00,
-    );
-    BillItem item3 = BillItem(
-      itemId: 'item3',
-      description: 'Item 3',
-      quantity: 1,
-      price: 500.00,
-    );
-
-    List<BillItem> chargeItems = [item1, item2, item3];
-    LaunchCustomerModel customerModel = LaunchCustomerModel(
-      customerName: 'Ahmed Kamal',
-      customerMobile: '+1234567890',
-      customerEmail: 'ahmed.kamal@example.com',
-      customerProfileId: '12345',
-      //customerProfileId: '280926',
-    );
-
-    return FawryLaunchModel(
-      allow3DPayment: true,
-      chargeItems: chargeItems,
-      launchCustomerModel: customerModel,
-      launchMerchantModel: LaunchMerchantModel(
-        merchantCode: Constants.merchantCode,
-        secureKey: Constants.secureKey,
-        merchantRefNum: DateTime.now().millisecondsSinceEpoch.toString(), // to match Kotlin’s timestamp logic
-      ),
-      skipLogin: true,
-      skipReceipt: false,
-      payWithCardToken: true,
-      paymentMethods: PaymentMethods.ALL,
-      launchApplePayModel: getApplePayModel(),
-      launchCheckOutModel: getCheckoutModel(),
-    );
-  }
-
-
-
-  var paymentMethod =PaymentMethods.ALL;
-  var language = FawrySDK.LANGUAGE_ARABIC;
-
-
-
-
-  Future<void> _startPayment() async {
-    try {
-
-      debugPrint("Starting payment with base URL: ${Constants.baseUrl}");
-      FawrySDK.instance.startPayment(
-        baseURL: Constants.baseUrl,
-        lang: language,
-        launchModel: buildLaunchModel(),
-
-
-
-      );
-    } on PlatformException catch (e) {
-      debugPrint("Failed to start payment: ${e.message}");
-    }
-  }
-
-  Future<void> _manageCards() async {
-    try {
-      debugPrint("Starting manageCards with base URL: ${Constants.baseUrl}");
-      FawrySDK.instance.manageCards(
-        baseURL: Constants.baseUrl,
-        lang: language,
-        launchModel: buildLaunchModel(),
-
-      );
-    } on PlatformException catch (e) {
-      debugPrint("Failed to manage cards: ${e.message}");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Fawry SDK Example'),
-        ),
-        body: Center(
-          child: Column(
+        appBar: AppBar(title: const Text('Fawry Flutter Example')),
+        body: const Padding(
+          padding: const EdgeInsets.all(24),
+          child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
+              const ElevatedButton(
                 onPressed: _startPayment,
-                child: const Text("Start Payment"),
+                child: const Text('Start Payment'),
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
+              const SizedBox(height: 16),
+              const ElevatedButton(
                 onPressed: _manageCards,
-                child: const Text("Manage Cards"),
+                child: const Text('Manage Cards'),
               ),
             ],
           ),
@@ -242,4 +308,11 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+}
+
+class Constants {
+  static String lang = FawrySDK.LANGUAGE_ARABIC;
+  static String merchantCode = '400000012230';
+  static String merchantSecretCode = '69826c87-963d-47b7-8beb-869f7461fd93';
+  static const String baseUrl = "https://atfawry.fawrystaging.com/";
 }
