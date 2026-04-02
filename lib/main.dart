@@ -34,9 +34,9 @@ final List<BillItem> cartItems = [
 
 LaunchMerchantModel get merchant => LaunchMerchantModel(
   merchantCode: Constants.merchantCode,
-  merchantRefNum: _uuid.v4(),
+  merchantRefNum: Uuid().v4(),
   //if you need to use signature you don't need to pass secureKey
-  secureKey: Constants.merchantSecretCode,
+  //secureKey: Constants.merchantSecretCode,
 );
 
 
@@ -48,7 +48,9 @@ LaunchCustomerModel get customer => LaunchCustomerModel(
 );
 
 LaunchApplePayModel getApplePayModel() {
-  return LaunchApplePayModel(merchantID: "merchant.NUMUMARKET");
+  return LaunchApplePayModel(merchantID: "merchant.NUMUMARKET"
+
+  );
 }
 
 LaunchCheckoutModel getCheckoutModel() {
@@ -142,8 +144,8 @@ FawryLaunchModel buildLaunchModel() {
   );
 
   return FawryLaunchModel(
-    //paymentSignature: paymentSignature,
-    //tokenizationSignature: tokenizationSignature,
+    paymentSignature: paymentSignature,
+    tokenizationSignature: tokenizationSignature,
     allow3DPayment: true,
     skipReceipt: false,
     skipLogin: true,
@@ -288,17 +290,17 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: const Text('Fawry Flutter Example')),
-        body: const Padding(
+        body: Padding(
           padding: const EdgeInsets.all(24),
-          child: const Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const ElevatedButton(
+              ElevatedButton(
                 onPressed: _startPayment,
                 child: const Text('Start Payment'),
               ),
               const SizedBox(height: 16),
-              const ElevatedButton(
+              ElevatedButton(
                 onPressed: _manageCards,
                 child: const Text('Manage Cards'),
               ),
