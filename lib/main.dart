@@ -14,11 +14,6 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 
-// import your SDK
-// import 'package:fawry_sdk/fawry_sdk.dart';
-
-final _uuid = const Uuid();
-
 /// =======================================================
 /// CONSTANTS
 /// =======================================================
@@ -151,7 +146,7 @@ FawryLaunchModel buildLaunchModel() {
     skipLogin: true,
     payWithCardToken: true,
     chargeItems: cartItems,
-    paymentMethods: PaymentMethods.ALL,
+    excludePaymentMethods: [PaymentMethods.WALLET],
     launchMerchantModel: launchMerchantModel,
     launchCustomerModel: customer,
     launchApplePayModel: getApplePayModel(),

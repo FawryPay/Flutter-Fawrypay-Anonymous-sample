@@ -1,0 +1,82 @@
+PODS:
+  - Alamofire (5.10.2)
+  - fawry_sdk (2.0.27):
+    - Alamofire (= 5.10.2)
+    - FawryPaySDK (>= 2.0.14)
+    - Flutter
+    - IQKeyboardManagerSwift (= 6.5.16)
+  - FawryPaySDK (2.0.14):
+    - Alamofire (~> 5.10.2)
+    - IQKeyboardManagerSwift (~> 6.5.16)
+  - Flutter (1.0.0)
+  - GoogleUtilities (8.1.2):
+    - GoogleUtilities/AppDelegateSwizzler (= 8.1.2)
+    - GoogleUtilities/Environment (= 8.1.2)
+    - GoogleUtilities/Logger (= 8.1.2)
+    - GoogleUtilities/MethodSwizzler (= 8.1.2)
+    - GoogleUtilities/Network (= 8.1.2)
+    - "GoogleUtilities/NSData+zlib (= 8.1.2)"
+    - GoogleUtilities/Privacy (= 8.1.2)
+    - GoogleUtilities/Reachability (= 8.1.2)
+    - GoogleUtilities/SwizzlerTestHelpers (= 8.1.2)
+    - GoogleUtilities/UserDefaults (= 8.1.2)
+  - GoogleUtilities/AppDelegateSwizzler (8.1.2):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Environment (8.1.2):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Logger (8.1.2):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/MethodSwizzler (8.1.2):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Network (8.1.2):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Privacy
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (8.1.2)":
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Privacy (8.1.2)
+  - GoogleUtilities/Reachability (8.1.2):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/SwizzlerTestHelpers (8.1.2):
+    - GoogleUtilities/MethodSwizzler
+  - GoogleUtilities/UserDefaults (8.1.2):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - IQKeyboardManagerSwift (6.5.16)
+
+DEPENDENCIES:
+  - fawry_sdk (from `.symlinks/plugins/fawry_sdk/ios`)
+  - Flutter (from `Flutter`)
+  - GoogleUtilities
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - FawryPaySDK
+    - GoogleUtilities
+    - IQKeyboardManagerSwift
+
+EXTERNAL SOURCES:
+  fawry_sdk:
+    :path: ".symlinks/plugins/fawry_sdk/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
+  fawry_sdk: 6247438ffc96f95be9e5295f1c6207d47d73c295
+  FawryPaySDK: 58c6575a8eb410eff0f7dd9583f4bb3d8bc256d0
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  GoogleUtilities: 766ace00c6b10d8148408f329d10c4f051931850
+  IQKeyboardManagerSwift: 12d89768845bb77b55cc092ecc2b1f9370f06b76
+
+PODFILE CHECKSUM: 6b878dc7ba9a8ebaf0e2c2566b9b056ede18c457
+
+COCOAPODS: 1.16.2

@@ -243,7 +243,7 @@ This will enable you to handle different responses and outcomes from the Fawry S
 | skipReceipt             | Boolean                 | optional - default value = false      | to skip receipt after payment trial      | \-          |
 | skipLogin               | Boolean                          | optional - default value = true  | to skip login screen in which we take email and mobile   | \-          |
 | authCaptureMode         | Boolean                          | optional - default value = false                                                                                                                                | depends on refund configuration: will be true when refund is enabled and false when refund is disabled                                                                                             | false       |
-| paymentMethod        | PaymentMethods         | Optional - default value = .ALL | If the user needs to show only one payment method. | PaymentMethods.ALL |
+| excludePaymentMethods | List | Optional | If the host app needs to exclude multiple payment methods. | `[PaymentMethods.CREDIT_CARD]` |
 
 <br/>Additional Required Parameters
 
@@ -292,7 +292,7 @@ FawryLaunchModel model = FawryLaunchModel(
    skipLogin: true,
    skipReceipt: true,
    payWithCardToken: false,
-   paymentMethods: PaymentMethods.ALL,
+   excludePaymentMethods: [PaymentMethods.CREDIT_CARD],
 );
 
 String baseUrl = "https://atfawry.fawrystaging.com/";
