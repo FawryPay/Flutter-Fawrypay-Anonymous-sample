@@ -1,0 +1,39 @@
+README.md
+  s_71a03cd335cfc2::t_1f1fa993de9208 246
+  s_71a03cd335cfc2::t_5126e6708bff62 295
+pubspec.yaml
+  s_71a03cd335cfc2::t_b8e8ed7cbb0fa5 32
+lib/main.dart
+  s_71a03cd335cfc2::t_89829b508d4b16 149
+test/launch_model_test.dart
+  s_71a03cd335cfc2::t_9b7b8dfe0f26ea 1-18
+ios/Podfile
+  s_71a03cd335cfc2::t_73b3450e3c62d9 32
+  s_71a03cd335cfc2::t_371ac6ff6e144f 45-49
+  s_71a03cd335cfc2::t_75bf650c71d25a 42
+  s_71a03cd335cfc2::t_ea80b8f4200ef2 50
+android/gradle.properties
+  s_71a03cd335cfc2::t_fb106c4bfe103b 7-10
+ios/Podfile.lock
+  s_71a03cd335cfc2::t_fd77efb17adf41 1-82
+ios/Runner.xcodeproj/project.pbxproj
+  s_71a03cd335cfc2::t_70f2f624103d8b 346,428,478
+ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme
+  s_71a03cd335cfc2::t_175e737ed6c63e 29,47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ad63feb2e42912502430d4791a062e43e26e5805",
+  "prompts": {},
+  "sessions": {
+    "s_71a03cd335cfc2": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "8128a2e9-bfd0-4aa8-8c29-ad06eadc86ec",
+        "model": "auto-smart"
+      },
+      "human_author": "Milad Metias <milad.metias@fawry.com>"
+    }
+  }
+}
